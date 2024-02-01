@@ -10,7 +10,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-header-title">
-                    <h2 class="modal-title" id="groupModalLabel"><span id="small-group-action-heading">New</span> Small Group</h2>
+                    <h2 class="modal-title" id="groupModalLabel"><span id="small-group-action-heading">New</span> Group</h2>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                     aria-label="Close"></button>
@@ -27,7 +27,7 @@
                     <div class="personal_box">
                         <!-- Left Class box -->
                         <div class="class-information">
-                            <p class="personal-text">Small Group information</p>
+                            <p class="personal-text">Group information</p>
                             <div class="search_box">
                                 <label class="trek-label">Name</label>
                                 <input type="text" class="form-control period-select" value="" id="group_name" name="group_name" />

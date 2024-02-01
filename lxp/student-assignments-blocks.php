@@ -15,7 +15,7 @@ foreach ($assignments as $assignment) {
     $course = get_post(get_post_meta($assignment->ID, 'course_id', true));
     $lxp_lesson_post = get_post(get_post_meta($assignment->ID, 'lxp_lesson_id', true));
     $segmentColor = "#1fa5d4";
-    $args = array( 'posts_per_page' => -1, 'post_type' => 'tl_lesson', 'meta_query' => array(array('key'   => 'tl_course_id', 'value' =>  $course->ID)));
+    $args = array( 'posts_per_page' => -1, 'post_type' => TL_LESSON_CPT, 'meta_query' => array(array('key'   => 'tl_course_id', 'value' =>  $course->ID)));
     $lessons = get_posts($args);
     $digital_journal_link = null;
     foreach($lessons as $lesson){ if ( $lxp_lesson_post->ID === $lesson->ID ) { $digital_journal_link = get_permalink($lesson->ID); }; }

@@ -125,7 +125,7 @@ $treks = get_posts($args);
         $.ajax({
             method: "POST",
             enctype: 'multipart/form-data',
-            url: apiUrl + "teacher/treks/assigned",
+            url: apiUrl + "teacher/treks/restricted",
             data: {teacher_post_id}
         }).done(function( response ) {
             const teacher_treks = response.data;

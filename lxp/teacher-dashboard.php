@@ -66,6 +66,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
     integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous" />
   <link href="<?php echo $treks_src; ?>/style/treksstyle.css" rel="stylesheet" />
+  <link rel="stylesheet" href="<?php echo $treks_src; ?>/style/newAssignment.css" />
   <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
     crossorigin="anonymous"></script>
 
@@ -254,6 +255,20 @@
             <tbody>  
               <?php 
                 foreach ($assignments as $assignment) { 
+                  $calendar_selection_info = json_decode(get_post_meta($assignment->ID, 'calendar_selection_info', true));
+                  $start = '';
+                  if (!is_null($calendar_selection_info) && property_exists($calendar_selection_info, 'start') && gettype($calendar_selection_info->start) === 'string') {
+                    $start = $calendar_selection_info->start;
+                  } elseif (!is_null($calendar_selection_info) && property_exists($calendar_selection_info, 'start') && gettype($calendar_selection_info->start) === 'object') {
+                    $start = $calendar_selection_info->start->date;
+                  }
+                  $end = '';
+                  if (!is_null($calendar_selection_info) && property_exists($calendar_selection_info, 'end') && gettype($calendar_selection_info->end) === 'string') {
+                    $end = $calendar_selection_info->end;
+                  } elseif (!is_null($calendar_selection_info) && property_exists($calendar_selection_info, 'end') && gettype($calendar_selection_info->end) === 'object') {
+                    $end = $calendar_selection_info->end->date;
+                  }
+                  $class_id = intval(get_post_meta($assignment->ID, 'class_id', true));
                   $class_post = get_post(get_post_meta($assignment->ID, 'class_id', true));
                   $lxp_lesson_post = get_post(get_post_meta($assignment->ID, 'lxp_lesson_id', true));
                   $course = get_post(get_post_meta($assignment->ID, 'course_id', true));
@@ -280,7 +295,7 @@
                   });
               ?>
                 <tr>
-                  <td><?php echo $class_post->post_title; ?></td>
+                <td><?php echo $class_id > 0 && $class_post ? $class_post->post_title : '---'; ?></td>
                   <td>
                     <?php 
                       echo $course->post_title; 
@@ -306,13 +321,13 @@
                     ?>
                   </td>
                   <td>
-                    <div class="student-stats-link"><a href="#" onclick="fetch_assignment_stats(<?php echo $assignment->ID; ?>, '<?php echo $course->post_title; ?>', '<?php echo $lxp_lesson_post->post_title; ?>', ['To Do', 'In Progress'], '<?php echo $course_post_image; ?>')"><?php echo count($students_in_progress); ?>/<?php echo count($student_stats); ?></a></div>
+                    <div class="student-stats-link"><a href="#" onclick="fetch_assignment_stats(<?php echo $assignment->ID; ?>, '<?php echo $course->post_title; ?>', '<?php echo $lxp_lesson_post->post_title; ?>', ['To Do', 'In Progress'], '<?php echo $start; ?>', '<?php echo $end; ?>')"><?php echo count($students_in_progress); ?>/<?php echo count($student_stats); ?></a></div>
                   </td>
                   <td>
-                    <div class="student-stats-link"><a href="#" onclick="fetch_assignment_stats(<?php echo $assignment->ID; ?>, '<?php echo $course->post_title; ?>', '<?php echo $lxp_lesson_post->post_title; ?>', ['Completed'], '<?php echo $course_post_image; ?>')"><?php echo count($students_completed); ?>/<?php echo count($student_stats); ?></a></div>
+                    <div class="student-stats-link"><a href="#" onclick="fetch_assignment_stats(<?php echo $assignment->ID; ?>, '<?php echo $course->post_title; ?>', '<?php echo $lxp_lesson_post->post_title; ?>', ['Completed'], '<?php echo $start; ?>', '<?php echo $end; ?>')"><?php echo count($students_completed); ?>/<?php echo count($student_stats); ?></a></div>
                   </td>
                   <td>
-                    <div class="student-stats-link"><a href="#" onclick="fetch_assignment_stats(<?php echo $assignment->ID; ?>, '<?php echo $course->post_title; ?>', '<?php echo $lxp_lesson_post->post_title; ?>', ['Graded'], '<?php echo $course_post_image; ?>')"><?php echo $students_graded; ?>/<?php echo count($student_stats); ?></a></div>
+                    <div class="student-stats-link"><a href="#" onclick="fetch_assignment_stats(<?php echo $assignment->ID; ?>, '<?php echo $course->post_title; ?>', '<?php echo $lxp_lesson_post->post_title; ?>', ['Graded'], '<?php echo $start; ?>', '<?php echo $end; ?>')"><?php echo $students_graded; ?>/<?php echo count($student_stats); ?></a></div>
                   </td>
                 </tr>  
               <?php } ?>
@@ -331,11 +346,23 @@
     crossorigin="anonymous"></script>
   
   <script type="text/javascript">
-    function fetch_assignment_stats(assignment_id, course, segment, statuses, course_post_image) {
-      jQuery('#student-progress-course-title').text(course);
-      jQuery('#student-progress-course-post-image').html(`<img width="50" class="rounded wp-post-image" src="`+course_post_image+`" alt="logo" />`);
-      jQuery('#student-progress-course-segment').text(segment);
-      jQuery('#student-progress-course-segment-char').text('L');
+    function fetch_assignment_stats(assignment_id, trek, segment, statuses, start, end) {
+
+      jQuery('#student-progress-trek-title').text(trek);
+      jQuery('#student-progress-trek-segment').text(segment);
+      jQuery('#student-progress-trek-segment-char').text('L');
+
+      // starting date and time
+      let start_date = new Date(start);
+      let start_date_string = start_date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+      let start_time_string = start_date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+      jQuery('#student-progress-trek-start-time').text(start_date_string + ' ' + start_time_string);
+      // ending date and time
+      let end_date = new Date(end);
+      let end_date_string = end_date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+      let end_time_string = end_date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+      jQuery('#student-progress-trek-end-time').text(end_date_string + ' ' + end_time_string);
+
       var segmentColor = "#1fa5d4";
       jQuery('.students-modal .modal-content .modal-body .students-breadcrumb .interdependence-tab .inter-tab-polygon, .assignment-modal .modal-content .modal-body .assignment-modal-left .recall-user .inter-tab-polygon').css('background-color', segmentColor);
       jQuery('.students-modal .modal-content .modal-body .students-breadcrumb .interdependence-tab .inter-tab-polygon-name, .assignment-modal .modal-content .modal-body .assignment-modal-left .recall-user .inter-user-name').css('color', segmentColor);
@@ -358,7 +385,7 @@
       }).fail(function (response) {
           console.error("Can not load teacher");
       });
-    }
+  }
 
     function student_assignment_stat_row_html(student, assignment_id) {
       let statusClass = '';

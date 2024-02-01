@@ -6,7 +6,7 @@ $lxp_client_admin_users = get_users(array('role' => 'lxp_client_admin'));
 $lxp_client_admin_user_ids = array_map(function ($user) { return $user->ID; },  $lxp_client_admin_users);
 // get post TL_DISTRICT_CPT based on multiple 'lxp_district_admin' meta values
 $district_posts = get_posts(array(
-  'post_type' => 'tl_district',
+  'post_type' => TL_DISTRICT_CPT,
   'meta_query' => array(
     array(
       'key' => 'lxp_district_admin',

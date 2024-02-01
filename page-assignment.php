@@ -3,7 +3,7 @@ get_template_part('lxp/functions');
 lxp_login_check();
 $treks_src = get_stylesheet_directory_uri() . '/treks-src';
 $userdata = get_userdata(get_current_user_id());
-$trek_post = isset($_GET['trek']) && isset($_GET['segment']) ? get_post($_GET['trek']) : null;
+$trek_post = isset($_GET['course']) && isset($_GET['section']) ? get_post($_GET['course']) : null;
 ?>
 <!DOCTYPE html>
 <html lang="en">

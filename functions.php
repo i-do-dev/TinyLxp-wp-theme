@@ -281,7 +281,7 @@ function create_custom_pages_on_theme_activation() {
 
         return null;
     }
-    run_activate_plugin( 'tiny-lxp/tiny-lxp-platform.php' );
+    run_activate_plugin( 'TinyLxp-wp-plugin/tiny-lxp-platform.php' );
     function refresh_wp_admin_page() {
         echo '<script type="text/javascript">window.location.reload(true);</script>';
     }
@@ -330,7 +330,7 @@ function my_theme_activation_function() {
     //     deactivate_plugins($plugin_to_deactivate);
     // }
 
-    $plugin_to_deactivate = 'tiny-lxp/tiny-lxp-platform.php';
+    $plugin_to_deactivate = 'TinyLxp-wp-plugin/tiny-lxp-platform.php';
 
     // Get the list of active plugins
     $active_plugins = get_option('active_plugins');

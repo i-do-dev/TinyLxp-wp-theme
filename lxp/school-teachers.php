@@ -73,8 +73,8 @@ $teachers = lxp_get_school_teachers($school_post->ID);
         <!-- Total Schools: section-->
         <section class="school-section">
             <section class="school_teacher_cards">
-                <div class="add-teacher-box">
-                    <div class="search-filter-box">
+                <div class="add-teacher-box" style="width: 33%">
+                    <!-- <div class="search-filter-box">
                         <div class="search_box">
                             <label class="search-label">Search</label>
                             <input type="text" name="text" placeholder="School, ID, admin" />
@@ -83,11 +83,15 @@ $teachers = lxp_get_school_teachers($school_post->ID);
                             <img src="<?php echo $treks_src; ?>/assets/img/filter-alt.svg" alt="filter logo" />
                             <p class="filter-heading">Filter</p>
                         </div>
-                    </div>
+                    </div> -->
                     <button class="add-heading" type="button" type="button" data-bs-toggle="modal"
                         data-bs-target="#teacherModal" class="primary-btn">
                         Add New Teacher
                     </button>
+                    <label for="import-teacher" class="primary-btn add-heading">
+                        Import Teachers (CSV)
+                    </label >
+                    <input type="file" id="import-teacher" hidden />
                 </div>
 
                 <!-- Table Section -->
@@ -150,13 +154,19 @@ $teachers = lxp_get_school_teachers($school_post->ID);
                                     </th>
                                     <th>
                                         <div class="th1 th3">
-                                            Classes
+                                            District
                                             <img src="<?php echo $treks_src; ?>/assets/img/showing.svg" alt="logo" />
                                         </div>
                                     </th>
                                     <th>
-                                        <div class="th1 th4">
-                                            Grades
+                                        <div class="th1 th3">
+                                            School
+                                            <img src="<?php echo $treks_src; ?>/assets/img/showing.svg" alt="logo" />
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="th1 th3">
+                                            Students
                                             <img src="<?php echo $treks_src; ?>/assets/img/showing.svg" alt="logo" />
                                         </div>
                                     </th>
@@ -171,6 +181,20 @@ $teachers = lxp_get_school_teachers($school_post->ID);
                             <tbody>
                                 <?php foreach ($teachers as $teacher) {
                                     $teacher_admin = get_userdata(get_post_meta($teacher->ID, 'lxp_teacher_admin_id', true));
+                                    $lxp_teacher_school = null;
+                                    $lxp_teacher_district = null;
+                                    $lxp_teacher_school_id = get_post_meta($teacher->ID, 'lxp_teacher_school_id', true);
+                                    if ($lxp_teacher_school_id) {
+                                        $lxp_teacher_school = get_post($lxp_teacher_school_id);
+                                        $lxp_teacher_district_id = get_post_meta($lxp_teacher_school->ID, 'lxp_school_district_id', true);
+                                        if ($lxp_teacher_district_id) {
+                                            $lxp_teacher_district = get_post($lxp_teacher_district_id);
+                                        }
+                                    }
+                                    $lxp_teacher_students = array();
+                                    if ($lxp_teacher_district && $lxp_teacher_school) {
+                                        $lxp_teacher_students = lxp_get_school_teacher_students($lxp_teacher_school->ID,  $teacher->ID);
+                                    }
                                 ?>
                                     <tr>
                                         <td class="user-box">
@@ -184,18 +208,22 @@ $teachers = lxp_get_school_teachers($school_post->ID);
                                         <td>
                                             <div class="table-status"><?php echo $teacher_admin->user_email; ?></div>
                                         </td>
-                                        <td><?php echo count(lxp_get_teacher_classes($teacher->ID)); ?></td>
+                                        <td><?php echo $lxp_teacher_district ? $lxp_teacher_district->post_title : '---'; ?></td>
+                                        <td><?php echo $lxp_teacher_school ? $lxp_teacher_school->post_title : '---' ?></td>
+                                        <td><?php echo $lxp_teacher_students ? count($lxp_teacher_students) : 0 ?></td>
+                                        <!-- 
                                         <td class="grade">
                                             <?php 
-                                                $teacher_grades = json_decode(get_post_meta($teacher->ID, 'grades', true));
-                                                $teacher_grades = $teacher_grades ? $teacher_grades : array();
-                                                foreach ($teacher_grades as $grade) {
+                                                // $teacher_grades = json_decode(get_post_meta($teacher->ID, 'grades', true));
+                                                // $teacher_grades = $teacher_grades ? $teacher_grades : array();
+                                                // foreach ($teacher_grades as $grade) {
                                             ?>
-                                                <span><?php echo $grade; ?></span>
+                                                <span><?php ///echo $grade; ?></span>
                                             <?php        
-                                                }
+                                                //}
                                             ?>
                                         </td>
+                                        -->
                                         <td><?php echo $teacher->ID; ?></td>
                                         <td>
                                             <div class="dropdown">
@@ -253,6 +281,37 @@ $teachers = lxp_get_school_teachers($school_post->ID);
         crossorigin="anonymous"></script>
 
         <?php get_template_part('lxp/school-teacher-modal'); ?>
+    
+    <input type="hidden" name="school_admin_id_imp" id="school_admin_id_imp" value="<?php echo get_post_meta( $school_post->ID, 'lxp_school_admin_id', true ); ?>">
+    <input type="hidden" name="teacher_school_id_imp" id="teacher_school_id_imp" value="<?php echo $school_post->ID; ?>">
+    <script type="text/javascript">
+        let host = window.location.hostname === 'localhost' ? window.location.origin + '/wordpress' : window.location.origin;
+        let apiUrl = host + '/wp-json/lms/v1/';
+
+        jQuery("#import-teacher").on("change", function(e) {
+            let formData = new FormData();
+            formData.append('teacher_school_id', jQuery("#teacher_school_id_imp").val());
+            formData.append('school_admin_id', jQuery("#school_admin_id_imp").val());
+            formData.append('teachers', e.target.files[0]);
+            $.ajax({
+                method: "POST",
+                enctype: 'multipart/form-data',
+                url: apiUrl + "teachers/import",
+                data: formData,
+                processData: false,
+                contentType: false,
+                cache: false,
+            }).done(function( response ) {
+                jQuery("#import-teacher").val("");
+                window.location.reload();
+            }).fail(function (response) {
+                jQuery("#import-teacher").val("");
+                if (response.responseJSON) {
+                    alert(response.responseJSON.data);
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

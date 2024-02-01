@@ -3,7 +3,26 @@
 global $treks_src;
 $school_post = lxp_get_user_school_post();
 $teachers = lxp_get_school_teachers($school_post->ID);
-$students = lxp_get_school_students($school_post->ID);
+
+$school_students = lxp_get_school_students($school_post->ID);
+$students = array();
+$is_teacher_assignment_needed = false;
+if (isset($_GET['teacher_id']) && $_GET['teacher_id'] != 0) {
+    $teacher_id = $_GET['teacher_id'];
+    $students = lxp_get_school_teacher_students($school_post->ID, $teacher_id);
+} else {
+    // filter out students who are not assigned to any teacher
+    $students = array_filter($school_students, function ($student) {
+        return !get_post_meta($student->ID, 'lxp_teacher_id', true);
+    });
+    // if all students are already assigned to teachers then show all students
+    if (count($students) == 0) {
+        $students = $school_students;
+    } else {
+        $is_teacher_assignment_needed = true;
+    }
+}
+
 $school_teachers_ids = array_map(function ($teacher) { return $teacher->ID; }, $teachers);
 $assignments = lxp_get_all_teachers_assignments($school_teachers_ids);
 //$classes = lxp_get_all_teachers_classes($school_teachers_ids);
@@ -101,16 +120,16 @@ $classes = array_merge($default_classes, $classes);
                     <div class="card">
                         <img src="<?php echo $treks_src; ?>/assets/img/classes.svg" alt="logo" />
                         <h3 class="numbers-heading"><?php echo $countClassesOtherGroup; ?></h3>
-                        <p class="name-text">Classes & Other Group</p>
+                        <p class="name-text">Classes & Groups</p>
                     </div>
                     <div class="card">
                         <img src="<?php echo $treks_src; ?>/assets/img/groups.svg" alt="logo" />
                         <h3 class="numbers-heading"><?php echo count($groups); ?></h3>
-                        <p class="name-text">Small Groups</p>
+                        <p class="name-text">Groups</p>
                     </div>
                     <div class="card">
                         <img src="<?php echo $treks_src; ?>/assets/img/user.svg" alt="logo" />
-                        <h3 class="numbers-heading"><?php echo count($students); ?></h3>
+                        <h3 class="numbers-heading"><?php echo count($school_students); ?></h3>
                         <p class="name-text">Students</p>
                     </div>
                     <div class="card">
@@ -150,21 +169,21 @@ $classes = array_merge($default_classes, $classes);
                                 <button class="nav-link" id="og-tab" data-bs-toggle="tab"
                                     data-bs-target="#other-group-tab-content" type="button" role="tab"
                                     aria-controls="other-group-tab-content" aria-selected="false">
-                                    Other Group
+                                    Group
                                 </button>
                             </li>
                             <li>
                                 <button class="nav-link" id="sg-tab" data-bs-toggle="tab"
                                     data-bs-target="#group-tab-content" type="button" role="tab"
                                     aria-controls="group-tab-content" aria-selected="false">
-                                    Small Group
+                                    Groups
                                 </button>
                             </li>
                         </ul>
                     </nav>
                     <div class="tab-content">
                         <?php get_template_part('lxp/school-dashboard-teachers-tab', 'teacher-tab', array('teachers' => $teachers)); ?>
-                        <?php get_template_part('lxp/school-dashboard-students-tab', 'student-tab', array('students' => $students)); ?>
+                        <?php get_template_part('lxp/school-dashboard-students-tab', 'student-tab', array('students' => $students, 'teachers' => $teachers, 'is_teacher_assignment_needed' => $is_teacher_assignment_needed)); ?>
                         <?php get_template_part('lxp/school-dashboard-classes-tab', 'class-tab', array('classes' => $classes)); ?>
                         <?php get_template_part('lxp/school-dashboard-other-groups-tab', 'other-group-tab', array('other_groups' => $other_groups)); ?>
                         <?php get_template_part('lxp/school-dashboard-groups-tab', 'group-tab', array('groups' => $groups)); ?>
@@ -173,6 +192,15 @@ $classes = array_merge($default_classes, $classes);
             </section>
             <!-- Recent TREKs -->
             <section class="recent-treks-section" style="width: 100%;">
+                <div class="recent-treks-section-div">
+                    <!--  TREKs header-->
+                    <div class="recent-treks-header section-div-header">
+                        <h2>Top Courses</h2>
+                        <div>
+                            <a href="#">See All</a>
+                        </div>
+                    </div>
+                </div>
                 <!-- Assignment section -->
                 <section class="recent-treks-section assignment-section">
                     <div class="recent-treks-section-div">
@@ -201,10 +229,15 @@ $classes = array_merge($default_classes, $classes);
         crossorigin="anonymous"></script>
     
     <?php get_template_part('lxp/school-teacher-modal'); ?>
-    <?php get_template_part('lxp/school-student-modal', 'student-modal', array("school_post" => $school_post,"teacher_post" => $school_post)); ?>
+
+    <?php
+        
+        $teacher_post = isset($_GET['teacher_id']) && $_GET['teacher_id'] != 0 ? get_post($_GET['teacher_id']) : null;
+        get_template_part('lxp/school-student-modal', 'student-modal', array("school_post" => $school_post, "teachers" => $teachers)); 
+    ?>
     
     <script type="text/javascript">
-        jQuery(document).ready(function(){
+        jQuery(document).ready(function() {
             jQuery('.nav-link').on('show.bs.tab', function (event) {
                 localStorage.setItem("school_dashboard_tab", jQuery(event.target).attr('data-bs-target'));
             });
@@ -219,6 +252,48 @@ $classes = array_merge($default_classes, $classes);
                 var tab = new bootstrap.Tab(tabEl);
                 tab.show();
             }
+
+            $('#teacher-drop-down').change(function() {
+                var teacher_id = $(this).val();
+                var url = new URL(window.location.href);
+                url.searchParams.set('teacher_id', teacher_id);
+                if (teacher_id == 0) {
+                    url.searchParams.delete('teacher_id');
+                }
+                window.location = url.href;
+            });
+        });
+    </script>
+
+    
+    <input type="hidden" name="school_admin_id_imp" id="school_admin_id_imp" value="<?php echo get_post_meta( $school_post->ID, 'lxp_school_admin_id', true ); ?>">
+    <input type="hidden" name="teacher_school_id_imp" id="teacher_school_id_imp" value="<?php echo $school_post->ID; ?>">
+    <script type="text/javascript">
+        let host = window.location.hostname === 'localhost' ? window.location.origin + '/wordpress' : window.location.origin;
+        let apiUrl = host + '/wp-json/lms/v1/';
+
+        jQuery("#import-teacher").on("change", function(e) {
+            let formData = new FormData();
+            formData.append('teacher_school_id', jQuery("#teacher_school_id_imp").val());
+            formData.append('school_admin_id', jQuery("#school_admin_id_imp").val());
+            formData.append('teachers', e.target.files[0]);
+            $.ajax({
+                method: "POST",
+                enctype: 'multipart/form-data',
+                url: apiUrl + "teachers/import",
+                data: formData,
+                processData: false,
+                contentType: false,
+                cache: false,
+            }).done(function( response ) {
+                jQuery("#import-teacher").val("");
+                window.location.reload();
+            }).fail(function (response) {
+                jQuery("#import-teacher").val("");
+                if (response.responseJSON) {
+                    alert(response.responseJSON.data);
+                }
+            });
         });
     </script>
 </body>

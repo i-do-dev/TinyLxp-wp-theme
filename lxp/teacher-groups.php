@@ -17,7 +17,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Small Group</title>
+    <title>Groups</title>
     <link href="<?php echo $treks_src; ?>/style/main.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?php echo $treks_src; ?>/style/header-section.css" />
     <link rel="stylesheet" href="<?php echo $treks_src; ?>/style/schoolAdminTeachers.css" />
@@ -96,14 +96,14 @@
         <div class="heading-wrapper">
             <div class="heading-left">
                 <div class="welcome-content">
-                    <h2 class="welcome-heading">Small Group</h2>
+                    <h2 class="welcome-heading">Groups</h2>
                 </div>
             </div>
 
             <div class="heading-right">
                 <a href="<?php echo site_url("students"); ?>" type="button" class="btn btn-outline-secondary btn-lg">Students</a>
-                <a href="<?php echo site_url("classes"); ?>" type="button" class="btn btn-outline-secondary btn-lg">Classes & Other Group</a>
-                <a href="<?php echo site_url("groups"); ?>" type="button" class="btn btn-secondary btn-lg">Small Group</a>
+                <a href="<?php echo site_url("classes"); ?>" type="button" class="btn btn-outline-secondary btn-lg">Classes & Groups</a>
+                <a href="<?php echo site_url("groups"); ?>" type="button" class="btn btn-secondary btn-lg">Groups</a>
             </div>
         </div>
 
@@ -122,7 +122,7 @@
                         </div>
                     </div>                    
                     <button id="groupModalBtn" class="add-heading" type="button" data-bs-toggle="modal" data-bs-target="#groupModal" class="primary-btn">
-                        Add New Small Group
+                        Add New Group
                     </button>
                 </div>
 
@@ -135,13 +135,13 @@
                                 <tr>
                                     <th class="">
                                         <div class="th1">
-                                            Small Groups
+                                            Groups
                                             <img src="<?php echo $treks_src; ?>/assets/img/showing.svg" alt="logo" />
                                         </div>
                                     </th>
                                     <th>
                                         <div class="th1 th2">
-                                            Classes/Other Group
+                                            Classe/Group
                                             <img src="<?php echo $treks_src; ?>/assets/img/showing.svg" alt="logo" />
                                         </div>
                                     </th>

@@ -1,7 +1,7 @@
 <?php
 global $treks_src;
 $school_post = $args['school_post'];
-$teachers = $args['teachers'];
+$teacher_post = $args['teacher_post'];
 ?>
 
 <!-- Modal -->
@@ -20,6 +20,7 @@ $teachers = $args['teachers'];
                     <input type="hidden" name="school_admin_id" id="school_admin_id" value="<?php echo get_current_user_id(); ?>">
                     <input type="hidden" name="student_school_id" id="student_school_id" value="<?php echo $school_post->ID; ?>">
                     <input type="hidden" name="student_post_id" id="student_post_id" value="0">
+                    <input type="hidden" name="teacher_id" id="teacher_id" value="<?php echo $teacher_post->ID; ?>">
 
                     <div class="personal_box">
                         <p class="personal-text">Personal information</p>
@@ -83,19 +84,7 @@ $teachers = $args['teachers'];
                                 <input class="form-control" type="text" name="about" id="aboutStudent"
                                     placeholder="Something about Student" />
                             </div>
-                        </div>
-                        <div class="input_box">
-                            <div class="label_box">
-                                <label class="label">Assign Teacher</label>
-                                <!-- <input class="form-control" type="xxx" name="xxx" id="xxx" placeholder="***" /> -->
-                                <select name="teacher_id" id="teacher_id" class="form-select">
-                                    <option value="0">Select Teacher</option>
-                                    <?php foreach ($teachers as $teacher) { ?>
-                                        <option value="<?php echo $teacher->ID; ?>" <?php echo isset($_GET['teacher_id']) && $_GET['teacher_id'] == $teacher->ID ? "selected=selected" : ""; ?> ><?php echo $teacher->post_title; ?></option>
-                                    <?php } ?>
-                                </select>
-                            </div>
-                        </div>
+                        </div>                        
                         <!-- 
                         <div class="input_box brief_input_box">
                             <div class="label_box brief_label_box id_label_box">

@@ -1,5 +1,5 @@
 <?php
-global $treks_src;
+global $treks_src, $trek_post;
 
 $args = array(
     'posts_per_page'   => -1,
@@ -28,17 +28,22 @@ $lessons = lxp_get_lessons_by_course($course_id);
             <h3 class="new-assignment-heading">New Assignment</h3>
             <div class="select-calendar-box">
                 <h4 class="new-assignment-heading select-calendar-heading">Calendar</h4>
-                <a href='javascript:void();' onClick='set_date_time();'>
-                    <div class="calendar-time-date <?php echo boolval($course_post) ? 'third-tab-date-time' : '' ?>">
-                        <img src="<?php echo $treks_src; ?>/assets/img/clock-outline.svg" alt="logo" />
+                    <a href='javascript:void();' onClick='set_date_time();'>
+                    <div class="calendar-time-date">
+                        <img src="<?php echo $treks_src; ?>/assets/img/clock-outline.svg" alt="logo" />                    
                         <div class="time-date-box days-box">
                             <div class="time-date-box">
                                 <p class="date-time"><span id="assignment_day"></span>, <span id="assignment_month"></span> <span id="assignment_date"></span></p>
                                 <p class="date-time" id="assignment_time_start"></p>
                                 <p class="date-time to-text">To</p>
+                                <p class="date-time"><span id="assignment_day_end"></span>, <span id="assignment_month_end"></span> <span id="assignment_date_end"></span></p>
                                 <p class="date-time" id="assignment_time_end"></p>
                             </div>
-                        </div>
+                            <!-- <label class="to-text all-day-label">
+                                <input class="form-check-input" type="checkbox" />
+                                All day
+                            </label> -->
+                        </div>                    
                     </div>
                 </a>
                 
@@ -61,13 +66,13 @@ $lessons = lxp_get_lessons_by_course($course_id);
                             <p class="select-course-title"><?php echo $course_post->post_title ?></p>
                         </div>
                     </div>
-                <?php } ?>
-                    <!-- horizontal line -->
-                    <div class="horizontal-line"></div>
+                <?php } ?>                    
+                <!-- horizontal line -->
+                <div class="horizontal-line"></div>
                     <!-- Lessons -->
                     <h4 class="new-assignment-heading select-calendar-heading">Lessons</h4>
                     <div id="lxp_lessons_view_container">                    
-                    </div> 
+                </div> 
                     
                     <!-- horizontal line -->
                 <div class="horizontal-line"></div>
@@ -78,9 +83,24 @@ $lessons = lxp_get_lessons_by_course($course_id);
                 <!-- Student Period and Grade-->
                 <div class="time-date-box days-box">
                     <div class="time-date-box">
+                        <!-- <p class="date-time student-period">Science 3rd period</p>
+                        <p class="date-time student-period">5th grade</p> -->
                         <p class="date-time student-period"><span class="student_count students_count_label">0</span> students</p>
                     </div>
                 </div>
+
+                <!-- Select Student Profile logos -->
+                <div class="select-students-logos">
+                    <!-- <img class="" src="<?php //echo $treks_src; ?>/assets/img/class-student.svg" alt="logo" />
+                    <img class="student-logo" src="<?php //echo $treks_src; ?>/assets/img/class-student.svg" alt="logo" />
+                    <img class="student-logo" src="<?php //echo $treks_src; ?>/assets/img/class-student.svg" alt="logo" />
+                    <img class="student-logo" src="<?php //echo $treks_src; ?>/assets/img/class-student.svg" alt="logo" />
+                    <img class="student-logo" src="<?php //echo $treks_src; ?>/assets/img/class-student.svg" alt="logo" />
+                    <img class="student-logo" src="<?php //echo $treks_src; ?>/assets/img/class-student.svg" alt="logo" />
+                    <img class="student-logo" src="<?php //echo $treks_src; ?>/assets/img/class-student.svg" alt="logo" />
+                    <img class="student-logo" src="<?php //echo $treks_src; ?>/assets/img/class-student.svg" alt="logo" /> -->
+                </div>
+
             </div>
         </div>
 
@@ -205,8 +225,8 @@ $lessons = lxp_get_lessons_by_course($course_id);
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript">
-    let host = window.location.hostname === 'localhost' ? window.location.origin + '/wordpress' : window.location.origin;
-    let apiUrl = host + '/wp-json/lms/v1/';
+    host = window.location.hostname === 'localhost' ? window.location.origin + '/wordpress' : window.location.origin;
+    apiUrl = host + '/wp-json/lms/v1/';
     window.selected_lxp_sections = [];
     window.selected_lxp_lessons = [];
     window.courses = <?php echo json_encode($courses); ?>;
@@ -352,7 +372,7 @@ $lessons = lxp_get_lessons_by_course($course_id);
             html += `
             <button class="dropdown-item dropdown-item2 practice-button">
                 <div class="time-date-box">
-                    <input class="form-check-input lesson-checkbox" type="checkbox" value="` + lxp_lesson.ID + `" id="lesson_id_` + lxp_lesson.ID + `" name="lesson_ids[]" ` + checked + ` section="`+lxp_section+`"/>                
+                    <input class="form-check-input lesson-checkbox" type="checkbox" title="` + lxp_lesson.post_title + `" value="` + lxp_lesson.ID + `" id="lesson_id_` + lxp_lesson.ID + `" name="lesson_ids[]" ` + checked + ` section="`+lxp_section+`"/>                
                     <div class="tags-body-polygon">
                         <span>L</span>
                     </div>

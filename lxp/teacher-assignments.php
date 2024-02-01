@@ -6,14 +6,14 @@ global $treks_src;
 $courseId =  isset($_GET['courseid']) ? $_GET['courseid'] : get_post_meta($post->ID, 'tl_course_id', true);
 $args = array(
 	'posts_per_page'   => 3,
-	'post_type'        => 'tl_trek',
+	'post_type'        => TL_TREK_CPT,
   'order' => 'asc',
 );
 
 if ( get_userdata(get_current_user_id())->user_email === "guest@rpatreks.com" ) {
   $args = array(
     'include' => '15',
-    'post_type'        => 'tl_trek',
+    'post_type'        => TL_TREK_CPT,
     'order' => 'post__in'
   );
 }
@@ -42,6 +42,8 @@ $assignments = lxp_get_teacher_assignments($teacher_post->ID);
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
     integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous" />
   <link href="<?php echo $treks_src; ?>/style/treksstyle.css" rel="stylesheet" />
+  <link rel="stylesheet" href="<?php echo $treks_src; ?>/style/newAssignment.css" />
+
   <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
     crossorigin="anonymous"></script>
 
@@ -181,6 +183,54 @@ $assignments = lxp_get_teacher_assignments($teacher_post->ID);
         
       </div>
     </section>
+
+    <!-- Calendar &  Activities Completed Overall -->
+    <!-- 
+    <section class="clen-act-section">
+      <div class="clen-act-section-div">
+        <div class="calendar-portion">
+          <div class="calendar-portion-header section-div-header">
+            <h2>Pending Assignments</h2>
+            <div>
+              <a href="#">See All</a>
+            </div>
+          </div>
+        </div>
+        <div class="activities-portion">
+          <div class="activities-portion-header section-div-header">
+            <h2>Activities Completed Overall</h2>
+          </div>
+
+          <div class="activities-portion-prap">
+            <p>This is the status of all the activities you have assigned.</p>
+
+            <div class="activities-portion-progress">
+               
+                <div class="portion-progress-div">
+                  <div class="recall-progress-bar"></div>
+                  <p>Recall</p>
+                </div>
+
+                <div class="portion-progress-div">
+                  <div class="pa-progress-bar"></div>
+                  <p>Practice A</p>
+                </div>
+
+                <div class="portion-progress-div">
+                  <div class="pb-progress-bar"></div>
+                  <p>Practice B</p>
+                </div>
+
+                <div class="portion-progress-div">
+                  <div class="apply-progress-bar"></div>
+                  <p>Apply</p>
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </section>
+     -->
   </section>
   <?php get_template_part('lxp/assignment-stats-modal', 'assignment-stats-modal'); ?>
 
@@ -208,11 +258,23 @@ $assignments = lxp_get_teacher_assignments($teacher_post->ID);
       }
     });
 
-    function fetch_assignment_stats(assignment_id, course, segment, statuses, course_post_image) {
-      jQuery('#student-progress-course-title').text(course);
-      jQuery('#student-progress-course-post-image').html(`<img width="50" class="rounded wp-post-image" src="`+course_post_image+`" alt="logo" />`);
-      jQuery('#student-progress-course-segment').text(segment);
-      jQuery('#student-progress-course-segment-char').text('L');
+    function fetch_assignment_stats(assignment_id, trek, segment, statuses, start, end) {
+
+      jQuery('#student-progress-trek-title').text(trek);
+      jQuery('#student-progress-trek-segment').text(segment);
+      jQuery('#student-progress-trek-segment-char').text('L');
+
+      // starting date and time
+      let start_date = new Date(start);
+      let start_date_string = start_date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+      let start_time_string = start_date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+      jQuery('#student-progress-trek-start-time').text(start_date_string + ' ' + start_time_string);
+      // ending date and time
+      let end_date = new Date(end);
+      let end_date_string = end_date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
+      let end_time_string = end_date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+      jQuery('#student-progress-trek-end-time').text(end_date_string + ' ' + end_time_string);
+
       var segmentColor = "#1fa5d4";
       jQuery('.students-modal .modal-content .modal-body .students-breadcrumb .interdependence-tab .inter-tab-polygon, .assignment-modal .modal-content .modal-body .assignment-modal-left .recall-user .inter-tab-polygon').css('background-color', segmentColor);
       jQuery('.students-modal .modal-content .modal-body .students-breadcrumb .interdependence-tab .inter-tab-polygon-name, .assignment-modal .modal-content .modal-body .assignment-modal-left .recall-user .inter-user-name').css('color', segmentColor);

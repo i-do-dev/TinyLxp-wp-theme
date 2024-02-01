@@ -14,7 +14,7 @@ $district_schools_students = lxp_get_all_schools_students($district_schools_ids)
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard</title>
+    <title>District Dashboard</title>
     <link href="<?php echo $treks_src; ?>/style/main.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?php echo $treks_src; ?>/style/header-section.css" />
     <link rel="stylesheet" href="<?php echo $treks_src; ?>/style/adminDashboard.css" />

@@ -63,7 +63,9 @@ function lxp_get_school_teachers($school_id)
         'posts_per_page'   => -1,        
         'meta_query' => array(
             array('key' => 'lxp_teacher_school_id', 'value' => $school_id, 'compare' => '=')
-        )
+        ),
+        'orderby' => 'title',
+        'order' => 'ASC'
     ) );
     
     $posts = $school_query->get_posts();
@@ -78,7 +80,9 @@ function lxp_get_school_students($school_id)
         'posts_per_page'   => -1,        
         'meta_query' => array(
             array('key' => 'lxp_student_school_id', 'value' => $school_id, 'compare' => '=')
-        )
+        ),
+        'orderby' => 'title',
+        'order' => 'ASC'
     ) );
     
     $posts = $school_query->get_posts();
@@ -115,7 +119,9 @@ function lxp_get_all_schools_teachers($school_ids)
         'posts_per_page'   => -1,        
         'meta_query' => array(
             array('key' => 'lxp_teacher_school_id', 'value' => $school_ids, 'compare' => 'IN')
-        )
+        ),
+        'orderby' => 'title',
+        'order' => 'ASC'
     ) );
     
     $posts = $school_query->get_posts();
@@ -344,15 +350,7 @@ function lxp_get_student_assignments($student_post_id)
 function lxp_get_assignments_courses($assignments)
 {
     $courses = array_map(function ($assignment) { return get_post($assignment->course_id)->ID; }, $assignments);
-    $query = new WP_Query( array( 
-        'post_type' => TL_COURSE_CPT, 
-        'posts_per_page' => -1, 
-        'post_status' => array( 'publish' ), 
-        'post__in' => array_values(array_unique($courses)), 
-        //'meta_key' => 'sort', 
-        'orderby' => 'meta_value_num', 
-        'order' => 'ASC' 
-    ) );
+    $query = new WP_Query( array( 'post_type' => TL_TREK_CPT , 'posts_per_page'   => -1, 'post_status' => array( 'publish' ), 'post__in' => array_values(array_unique($courses)), 'orderby' => 'meta_value_num', 'order' => 'ASC' ) );
     return $query->get_posts();
 }
 
@@ -388,12 +386,19 @@ function lxp_assignment_stats($assignment_id) {
     return $students;
 }
 
-function lxp_get_teacher_saved_treks($teacher_post_id, $treks_saved_ids, $strand = '', $sort='', $search='')
+function lxp_get_teacher_saved_courses($teacher_post_id, $treks_saved_ids, $strand = '', $sort='', $search='')
 {
     if (count($treks_saved_ids) > 0 && is_array($treks_saved_ids)) {
         // get teacher post type 'treks_saved' metadata
         // $treks_saved_ids = get_post_meta($teacher_post_id, 'treks_saved');
-        $args = array( 'post_type' => TL_TREK_CPT , 'posts_per_page'   => -1, 'post_status' => array( 'publish' ), 'post__in' => array_values(array_unique($treks_saved_ids)), 'meta_key' => 'sort', 'orderby' => 'meta_value_num', 'order' => 'ASC' );
+        $args = array( 
+            'post_type' => TL_TREK_CPT , 
+            'posts_per_page'   => -1, 
+            'post_status' => array( 'publish' ), 
+            'post__in' => array_values(array_unique($treks_saved_ids)), 
+            // 'meta_key' => 'sort', 
+            'orderby' => 'meta_value_num', 
+            'order' => 'ASC' );
         if(!($strand === '' || $strand === 'none')) {
             $args['meta_query'] = array('key' => 'strands', 'value' => $strand, 'compare' => '=');
         }
@@ -477,7 +482,7 @@ function get_assignment_lesson_slides($assignment_post_id) {
     $course = get_post(get_post_meta($assignment_post_id, 'course_id', true));
     $lxp_lesson_post = get_post(get_post_meta($assignment_post_id, 'lxp_lesson_id', true));
     $lesson_query = new WP_Query( array( 
-        'post_type' => "tl_lesson", 
+        'post_type' => TL_LESSON_CPT, 
         'post_status' => array( 'publish' ),
         'posts_per_page'   => -1,        
         'meta_query' => array(
@@ -744,31 +749,6 @@ function lxp_get_courses()
         'order' => 'asc'
     ) );
     return $courses_query->get_posts();
-}
-
-function lxp_get_teacher_saved_courses($teacher_post_id, $courses_saved_ids, $strand = '', $sort='', $search='')
-{
-    if (count($courses_saved_ids) > 0 && is_array($courses_saved_ids)) {
-        // get teacher post type 'courses_saved' metadata
-        $courses_saved_ids = get_post_meta($teacher_post_id, 'courses_saved');
-        // $args = array( 'post_type' => TL_COURSE_CPT , 'posts_per_page'   => -1, 'post_status' => array( 'publish' ), 'post__in' => array_values(array_unique($courses_saved_ids)), 'meta_key' => 'sort', 'orderby' => 'meta_value_num', 'order' => 'ASC' );
-        $args = array( 'post_type' => TL_COURSE_CPT , 'posts_per_page'   => -1, 'post_status' => array( 'publish' ), 'post__in' => array_values(array_unique($courses_saved_ids)), 'order' => 'ASC' );
-        if(!($strand === '' || $strand === 'none')) {
-            $args['meta_query'] = array('key' => 'strands', 'value' => $strand, 'compare' => '=');
-        }
-
-        if(!($sort === '' || $sort === 'none')) {
-            $args['order'] = $sort;
-        }
-
-        if(!($search === '' || $search === 'none')) {
-            $args['s'] = $search;
-        }        
-        $query = new WP_Query( $args );
-        return $query->get_posts();
-    } else {
-        return array();
-    }
 }
 
 function lxp_get_lessons_by_course($course_id)

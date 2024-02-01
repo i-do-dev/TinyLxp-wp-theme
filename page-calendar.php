@@ -106,31 +106,6 @@ $treks_src = get_stylesheet_directory_uri() . '/treks-src';
             </form>
           </div>
         </div>
-        <div class="rpa-segments-box">
-          <h5 class="rpa-heading">TSG Segments</h5>
-          <div class="rpa-segments-form">
-            <!-- <div class="form-check">
-              <input class="form-check-input input-all" type="checkbox" value="" id="all" />
-              <label class="form-check-label" for="all"> All </label>
-            </div> -->
-            <div class="form-check">
-              <input class="form-check-input input-recall" type="checkbox" value="" id="Recall" />
-              <label class="form-check-label" for="Recall"> Recall </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input input-practiceA" type="checkbox" value="" id="practiceA" />
-              <label class="form-check-label" for="practiceA"> Practice A</label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input input-practiceB" type="checkbox" value="" id="practiceB" />
-              <label class="form-check-label" for="practiceB"> Practice B </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input input-apply" type="checkbox" value="" id="apply" />
-              <label class="form-check-label" for="apply"> Apply </label>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </section>
@@ -169,20 +144,20 @@ $treks_src = get_stylesheet_directory_uri() . '/treks-src';
               eventClassNames: function(arg) {
                   let segment_class = "segment-default-event";
                   if (arg.event.extendedProps.hasOwnProperty("segment")) {
-                      segment_class = arg.event.extendedProps.segment + "-event";
+                      segment_class = "practice-a-event";
                   }
                   return segment_class;
               },
               eventContent: function(arg) {
                   let trek_segment_el = document.createElement('p');
                   trek_segment_el.innerHTML = arg.event.title;
-                  let event_title_class  = arg.event.extendedProps.segment + "-segment-event-title";
+                  let event_title_class  = "practice-a-segment-event-title";
                   trek_segment_el.classList.add(event_title_class);
                   trek_segment_el.classList.add("lxp-event-title");
                   
                   let trek_el = document.createElement('p');
-                  trek_el.innerHTML = arg.event.extendedProps.trek;
-                  let event_sub_title_class = arg.event.extendedProps.segment + "-segment-event-sub-title"
+                  trek_el.innerHTML = arg.event.extendedProps.course;
+                  let event_sub_title_class = "practice-a-segment-event-sub-title";
                   trek_el.classList.add(event_sub_title_class);
                   trek_el.classList.add("lxp-event-sub-title");
 
@@ -190,9 +165,9 @@ $treks_src = get_stylesheet_directory_uri() . '/treks-src';
                   return {domNodes: event_dom_nodes};
               },
               eventClick: function(eventClickInfo) {
-                  jQuery('#student-progress-trek-title').text(eventClickInfo.event.extendedProps.trek);
+                  jQuery('#student-progress-trek-title').text(eventClickInfo.event.extendedProps.course);
                   jQuery('#student-progress-trek-segment').text(eventClickInfo.event.title);
-                  jQuery('#student-progress-trek-segment-char').text(eventClickInfo.event.title[0]);
+                  jQuery('#student-progress-trek-segment-char').text('L');
                   // starting date and time
                   let start_date = new Date(eventClickInfo.event.start);
                   let start_date_string = start_date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
@@ -203,27 +178,7 @@ $treks_src = get_stylesheet_directory_uri() . '/treks-src';
                   let end_date_string = end_date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
                   let end_time_string = end_date.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
                   jQuery('#student-progress-trek-end-time').text(end_date_string + ' ' + end_time_string);
-
-                  switch (eventClickInfo.event.title) {
-                      case 'Overview':
-                          segmentColor = "#979797";
-                          break;
-                      case 'Recall':
-                          segmentColor = "#ca2738";
-                          break;
-                      case 'Practice A':
-                          segmentColor = "#1fa5d4";
-                          break;
-                      case 'Practice B':
-                          segmentColor = "#1fa5d4";
-                          break;
-                      case 'Apply':
-                          segmentColor = "#9fc33b";
-                          break;
-                      default:
-                          segmentColor = "#ca2738";
-                          break;
-                  }
+                  segmentColor = '#1fa5d4';
                   jQuery('.students-modal .modal-content .modal-body .students-breadcrumb .interdependence-tab .inter-tab-polygon, .assignment-modal .modal-content .modal-body .assignment-modal-left .recall-user .inter-tab-polygon').css('background-color', segmentColor);
                   jQuery('.students-modal .modal-content .modal-body .students-breadcrumb .interdependence-tab .inter-tab-polygon-name, .assignment-modal .modal-content .modal-body .assignment-modal-left .recall-user .inter-user-name').css('color', segmentColor);
                   fetch_assignment_stats(eventClickInfo.event.id);

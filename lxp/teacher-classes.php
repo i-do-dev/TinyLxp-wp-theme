@@ -23,7 +23,7 @@ $classes = array_merge($default_classes, $classes);
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Classes & Other Group</title>
+    <title>Classes & Groups</title>
     <link href="<?php echo $treks_src; ?>/style/main.css" rel="stylesheet" />
     <link rel="stylesheet" href="<?php echo $treks_src; ?>/style/header-section.css" />
     <link rel="stylesheet" href="<?php echo $treks_src; ?>/style/schoolAdminTeachers.css" />
@@ -103,15 +103,15 @@ $classes = array_merge($default_classes, $classes);
         <div class="heading-wrapper">
             <div class="heading-left">
                 <div class="welcome-content">
-                    <h2 class="welcome-heading">Classes & Other Group</h2>
+                    <h2 class="welcome-heading">Classes & Groups</h2>
                     <p class="welcome-text">Student enrollment and registration management</p>
                 </div>
             </div>
 
             <div class="heading-right">
                 <a href="<?php echo site_url("students"); ?>" type="button" class="btn btn-outline-secondary btn-lg">Students</a>
-                <a href="<?php echo site_url("classes"); ?>" type="button" class="btn btn-secondary btn-lg">Classes & Other Group</a>
-                <a href="<?php echo site_url("groups"); ?>" type="button" class="btn btn-outline-secondary btn-lg">Small Group</a>
+                <a href="<?php echo site_url("classes"); ?>" type="button" class="btn btn-secondary btn-lg">Classes & Groups</a>
+                <a href="<?php echo site_url("groups"); ?>" type="button" class="btn btn-outline-secondary btn-lg"> Groups</a>
             </div>
         </div>
 
@@ -130,7 +130,7 @@ $classes = array_merge($default_classes, $classes);
                         </div>
                     </div>                    
                     <button id="classModalBtn" class="add-heading" type="button" data-bs-toggle="modal" data-bs-target="#classModal" class="primary-btn">
-                        Add New Class & Other Group
+                        Add New Class & Groups
                     </button>
                 </div>
 
@@ -167,7 +167,7 @@ $classes = array_merge($default_classes, $classes);
                                     </th>
                                     <th>
                                         <div class="th1 th5">
-                                            Small Groups
+                                            Groups
                                             <img src="<?php echo $treks_src; ?>/assets/img/showing.svg" alt="logo" />
                                         </div>
                                     </th>
@@ -239,7 +239,7 @@ $classes = array_merge($default_classes, $classes);
                                 <tr>
                                     <th class="">
                                         <div class="th1">
-                                            Other Groups
+                                            Groups
                                             <img src="<?php echo $treks_src; ?>/assets/img/showing.svg" alt="logo" />
                                         </div>
                                     </th>
@@ -263,7 +263,7 @@ $classes = array_merge($default_classes, $classes);
                                     </th>
                                     <th>
                                         <div class="th1 th5">
-                                            Small Groups
+                                            Groups
                                             <img src="<?php echo $treks_src; ?>/assets/img/showing.svg" alt="logo" />
                                         </div>
                                     </th>
