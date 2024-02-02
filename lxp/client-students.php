@@ -398,7 +398,7 @@ if(isset($_GET['school_id']) && isset($_GET['teacher_id'])) {
                 });
                 
                 $('#studentModalBtn').click(function () {
-                    if ($('#teacher-drop-down').val() == '0') {
+                    if ($('#school-drop-down').val() == '0') {
                         $('#studentModalAlert').modal('show');
                     }
                 });
