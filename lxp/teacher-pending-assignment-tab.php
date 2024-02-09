@@ -2,14 +2,14 @@
   global $treks_src;
   $assignments = $args["assignments"];
   // filter $assignments based on "To Do", "In Progress" statuses and not having "Completed" status
-  $assignments = array_filter($assignments, function($assignment) {
-    $student_stats = lxp_assignment_stats($assignment->ID);
-    $statuses = array("To Do", "In Progress");
-    $students_in_progress = array_filter($student_stats, function($studentStat) use ($statuses) {
-      return in_array($studentStat["status"], $statuses);
-    });
-    return count($students_in_progress) > 0;
-  });
+  // $assignments = array_filter($assignments, function($assignment) {
+  //   $student_stats = lxp_assignment_stats($assignment->ID);
+  //   $statuses = array("To Do", "In Progress");
+  //   $students_in_progress = array_filter($student_stats, function($studentStat) use ($statuses) {
+  //     return in_array($studentStat["status"], $statuses);
+  //   });
+  //   return count($students_in_progress) > 0;
+  // });
   
 ?>
 <!--  table -->
@@ -69,9 +69,10 @@
             }
             return $ok;
           });
+          if($students_graded == '0') {
       ?>
         <tr>
-          <td><?php echo $class_post && $class_id > 0 ? $class_post->post_title : '---'; ?></td>
+        <td><?php echo $class_post && $class_id > 0 ? $class_post->post_title : '---'; ?></td>
           <td>
             <?php 
               $title = str_replace("'", "`", $course->post_title);
@@ -109,7 +110,7 @@
             <div class="student-stats-link"><a href="#" onclick="fetch_assignment_stats(<?php echo $assignment->ID; ?>, '<?php echo $title; ?>', '<?php echo $lxp_lesson_post->post_title; ?>', ['Graded'], '<?php echo $start; ?>', '<?php echo $end; ?>')"><?php echo $students_graded; ?>/<?php echo count($student_stats); ?></a></div>
           </td>
         </tr>  
-      <?php  } ?>
+      <?php } } ?>
     </tbody>
   </table>
 </div>

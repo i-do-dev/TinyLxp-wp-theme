@@ -29,10 +29,25 @@
     <tbody>
       <?php 
         foreach ($assignments as $assignment) { 
+          $calendar_selection_info = json_decode(get_post_meta($assignment->ID, 'calendar_selection_info', true));
+          $start = '';
+          if (!is_null($calendar_selection_info) && property_exists($calendar_selection_info, 'start') && gettype($calendar_selection_info->start) === 'string') {
+            $start = $calendar_selection_info->start;
+          } elseif (!is_null($calendar_selection_info) && property_exists($calendar_selection_info, 'start') && gettype($calendar_selection_info->start) === 'object') {
+            $start = $calendar_selection_info->start->date;
+          }
+
+          $end = '';
+          if (!is_null($calendar_selection_info) && property_exists($calendar_selection_info, 'end') && gettype($calendar_selection_info->end) === 'string') {
+            $end = $calendar_selection_info->end;
+          } elseif (!is_null($calendar_selection_info) && property_exists($calendar_selection_info, 'end') && gettype($calendar_selection_info->end) === 'object') {
+            $end = $calendar_selection_info->end->date;
+          }
+
           $class_post = get_post(get_post_meta($assignment->ID, 'class_id', true));
           $lxp_lesson_post = get_post(get_post_meta($assignment->ID, 'lxp_lesson_id', true));
           $course = get_post(get_post_meta($assignment->ID, 'course_id', true));
-          $lesson_segment = implode("-", explode(" ", strtolower($lxp_lesson_post->post_title))) ;
+          // $lesson_segment = implode("-", explode(" ", strtolower($lxp_lesson_post->post_title))) ;
           
           $student_stats = lxp_assignment_stats($assignment->ID);
           $statuses = array("To Do", "In Progress");
@@ -61,14 +76,14 @@
           <td><?php echo $class_post->post_title; ?></td>
           <td>
             <?php 
-              echo $course->post_title; 
+              $title = str_replace("'", "`", $course->post_title);
+              echo $title; 
               $course_post_image = has_post_thumbnail( $course->ID ) ? get_the_post_thumbnail_url($course->ID) : $treks_src.'/assets/img/tr_main.jpg';                       
             ?>
           </td>
           <td>
             <div class="assignments-table-cs-td-poly">
               <div class="polygon-shap">
-                <!-- <span><?php echo $lxp_lesson_post->post_title[0]; ?></span> -->
                 <span>L</span>
               </div>
               <div>
@@ -84,13 +99,13 @@
             ?>
           </td>
           <td>
-            <div class="student-stats-link"><a href="#" onclick="fetch_assignment_stats(<?php echo $assignment->ID; ?>, '<?php echo $course->post_title; ?>', '<?php echo $lxp_lesson_post->post_title; ?>', ['To Do', 'In Progress'], '<?php echo $course_post_image; ?>')"><?php echo count($students_in_progress); ?>/<?php echo count($student_stats); ?></a></div>
+            <div class="student-stats-link"><a href="#" onclick="fetch_assignment_stats(<?php echo $assignment->ID; ?>, '<?php echo $title; ?>', '<?php echo $lxp_lesson_post->post_title; ?>', ['To Do', 'In Progress'], '<?php echo $start; ?>', '<?php echo $end; ?>')"><?php echo count($students_in_progress); ?>/<?php echo count($student_stats); ?></a></div>
           </td>
           <td>
-            <div class="student-stats-link"><a href="#" onclick="fetch_assignment_stats(<?php echo $assignment->ID; ?>, '<?php echo $course->post_title; ?>', '<?php echo $lxp_lesson_post->post_title; ?>', ['Completed'], '<?php echo $course_post_image; ?>')"><?php echo count($students_completed); ?>/<?php echo count($student_stats); ?></a></div>
+            <div class="student-stats-link"><a href="#" onclick="fetch_assignment_stats(<?php echo $assignment->ID; ?>, '<?php echo $title; ?>', '<?php echo $lxp_lesson_post->post_title; ?>', ['Completed'], '<?php echo $start; ?>', '<?php echo $end; ?>')"><?php echo count($students_completed); ?>/<?php echo count($student_stats); ?></a></div>
           </td>
           <td>
-            <div class="student-stats-link"><a href="#" onclick="fetch_assignment_stats(<?php echo $assignment->ID; ?>, '<?php echo $course->post_title; ?>', '<?php echo $lxp_lesson_post->post_title; ?>', ['Graded'], '<?php echo $course_post_image; ?>')"><?php echo $students_graded; ?>/<?php echo count($student_stats); ?></a></div>
+            <div class="student-stats-link"><a href="#" onclick="fetch_assignment_stats(<?php echo $assignment->ID; ?>, '<?php echo $title; ?>', '<?php echo $lxp_lesson_post->post_title; ?>', ['Graded'], '<?php echo $start; ?>', '<?php echo $end; ?>')"><?php echo $students_graded; ?>/<?php echo count($student_stats); ?></a></div>
           </td>
         </tr>  
       <?php } } ?>
