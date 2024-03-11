@@ -421,13 +421,16 @@ function lxp_get_teacher_saved_courses($teacher_post_id, $treks_saved_ids, $stra
 // function to get assignment submission post type by assignment id using WPQuery object which returns array of posts.
 function lxp_get_assignment_submissions($assignment_id, $student_post_id)
 {
-    $query = new WP_Query( array( 'post_type' => TL_ASSIGNMENT_SUBMISSION_CPT , 'posts_per_page'   => -1, 'post_status' => array( 'publish' ), 
-                                'meta_query' => array(
-                                    array('key' => 'lxp_assignment_id', 'value' => $assignment_id, 'compare' => '='),
-                                    array('key' => 'lxp_student_id', 'value' => $student_post_id, 'compare' => '=')
-                                )
-                            )
-                        );
+    $query = new WP_Query( array( 
+        'post_type' => TL_ASSIGNMENT_SUBMISSION_CPT , 
+        'posts_per_page'   => -1, 
+        'post_status' => array( 'publish' ), 
+            'meta_query' => array(
+                array('key' => 'lxp_assignment_id', 'value' => $assignment_id, 'compare' => '='),
+                array('key' => 'lxp_student_id', 'value' => $student_post_id, 'compare' => '=')
+            )
+        )
+    );
     $assignment_submission_posts = $query->get_posts();
 
     if ($assignment_submission_posts) {

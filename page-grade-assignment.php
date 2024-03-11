@@ -293,8 +293,7 @@ $total_grades_str = $result ? '/' .json_decode($result)->score->max : '';
                         if ($status && $status === 'Completed') {
                           $status = 'Submitted';
                         }
-
-                        if (is_array($assignment_submission) && $status && $status === 'Submitted' && get_post_meta($assignment_submission['ID'], 'mark_as_graded', true) === 'true') {
+                        if ($status && $status === 'Submitted' && get_post_meta($assignment_submissions[0][$assignment->ID]['submission']['ID'], 'mark_as_graded', true) === 'true') {
                           $status = 'Graded';
                           $statusClass = 'bg-blue';
                         }
@@ -591,8 +590,11 @@ $total_grades_str = $result ? '/' .json_decode($result)->score->max : '';
 
                 </div>
               </div>
-          <?php } else {
-            get_template_part("lxp/teacher-grade", "teacher-grade", array('assignment' => intval($_GET['assignment']), 'slides' => $slides));            
+          <?php } else if ( isset($_GET['lesson_id']) && isset($_GET['student_id']) ) { ?>
+            <iframe style="border: none;width: 100%;height: 400px;" class="" src="<?php echo site_url() ?>?lti-platform&post=<?php echo $_GET['lesson_id'] ?>&id=jcfvxikc&is_summary=1&student_id=<?php echo $_GET['student_id'] ?>"  allowfullscreen></iframe>
+          <?php
+          } else {
+            ( is_object($slides) == false ) ? get_template_part("lxp/teacher-video-grade") : get_template_part("lxp/teacher-grade", "teacher-grade", array('assignment' => intval($_GET['assignment']), 'slides' => $slides));
           }
         ?>
         <!-- End Table -->
